@@ -1,11 +1,10 @@
 package controllers
 
-import java.time.LocalDate
 import javax.inject._
 
-import akka.util.ByteString
-import play.api.http.{MimeTypes, Writeable}
-import play.api.libs.json.{JsValue, Json}
+import models.Envelope
+import models.JsonSerializers._
+import play.api.libs.json.Json
 import play.api.mvc._
 
 /**
@@ -26,19 +25,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(views.html.index())
   }
 
-
-  implicit def writeableOf_JsValue: Writeable[JsValue] = {
-    val mimeType = Some(withCharset(MimeTypes.JSON)(Codec.utf_8))
-    println(s"writeable is called -- >> $mimeType")
-    Writeable(a => ByteString(Json.toBytes(a)), mimeType)
-  }
-
-  implicit val envelopeWrites = Json.writes[Envelope]
-
   def home() = Action {
-    Ok(Json.toJson(Envelope("Hällo Döcker World")))
+    Ok(Json.toJson(Envelope("Hällo Döcker Würld")))
   }
-
-  case class Envelope(message: String, date: LocalDate = LocalDate.now())
 
 }
