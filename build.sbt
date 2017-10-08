@@ -12,7 +12,9 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2
 
 packageName in Docker := "jaros/play-star"
 version in Docker := "latest"
+dockerBaseImage := "openjdk"
 dockerExposedPorts := Seq(9000)
+dockerRepository := Some("docker.io")
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "ee.profi.controllers._"
