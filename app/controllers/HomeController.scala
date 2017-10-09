@@ -1,5 +1,6 @@
 package controllers
 
+import java.nio.file.{Files, Path, Paths}
 import javax.inject._
 
 import models.Envelope
@@ -28,5 +29,19 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
   def home() = Action {
     Ok(Json.toJson(Envelope("Hällo Döcker Würld")))
   }
+
+}
+
+object Main {
+
+  import scala.collection.JavaConverters._
+
+  def main(args: Array[String]): Unit = {
+    scanFiles(s"${System.getProperty("user.home")}/projects/play-star/app/").foreach(println(_))
+  }
+
+  def scanFiles(dir: String): Iterator[Path] =
+    Files.walk(Paths.get(dir)).filter(Files.isRegularFile(_)).iterator().asScala
+
 
 }
