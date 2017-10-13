@@ -3,17 +3,18 @@ package controllers
 import java.nio.file.{Files, Path, Paths}
 import javax.inject._
 
-import models.Envelope
-import models.JsonSerializers._
+import models.Models.{PageStatus, _}
 import play.api.libs.json.Json
 import play.api.mvc._
+
+import scala.concurrent.ExecutionContext
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
   /**
     * Create an Action to render an HTML page.
@@ -27,7 +28,11 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
   }
 
   def home() = Action {
-    Ok(Json.toJson(Envelope("Hällo Döcker Würld")))
+    Ok(Json.toJson(PageView(PageStatus.Ok, Envelope(Map(
+      "1" -> Message("Hällo Döcker Würld"),
+      "2" -> Message("Blah bla"),
+      "3" -> Message("Ops"),
+    )))))
   }
 
 }
@@ -45,7 +50,7 @@ object Main {
   }
 
 
-  def scanDirectories(dirs: List[String]): List[Path] = dirs.flatMap(scanDirectory)
+  def scanDirectories(dirs: List[String]): List[Path] = dirs flatMap scanDirectory
 
   def scanDirectory(dir: String): Iterator[Path] =
     Files.walk(Paths.get(dir)).filter(Files.isRegularFile(_)).iterator().asScala
