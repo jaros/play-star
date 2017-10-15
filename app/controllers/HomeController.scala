@@ -32,7 +32,9 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
         Map(
           "1" -> Message("Hällo Döcker Würld"),
           "2" -> Message("Blah bla"),
-          "3" -> Message("Ops"))
+          "3" -> Message("Ops"),
+          "4" -> Message("Döner")
+        )
       )
     )))
   }
