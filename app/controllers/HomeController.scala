@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject._
 
+import models.MessagesRepo
 import models.Models.{PageStatus, _}
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -29,12 +30,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
   def home() = Action {
     Ok(Json.toJson(PageView(PageStatus.Ok,
       Envelope(
-        Map(
-          "1" -> Message("Hällo Döcker Würld"),
-          "2" -> Message("Blah bla"),
-          "3" -> Message("Ops"),
-          "4" -> Message("Döner")
-        )
+        (Stream.from(0).map(_.toString) zip MessagesRepo.all).toMap
       )
     )))
   }
