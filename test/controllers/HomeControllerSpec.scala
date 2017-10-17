@@ -1,5 +1,7 @@
 package controllers
 
+import java.io.PrintWriter
+import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, Paths}
 
 import org.scalatestplus.play._
@@ -55,7 +57,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       //      s"$home/.npm"
       //      ,s"$home/.m2"
       //    )).size
-      val javaFiles = getListOfFiles(s"$home/.npm")
+      val javaFiles = Files.readAllLines(Paths.get("files.list"))//getListOfFiles(s"$home/.npm")
       println(s"java files amount: ${javaFiles.size}")
       val total = System.currentTimeMillis() - start
       println(s"spent $total")
