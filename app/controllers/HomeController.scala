@@ -1,11 +1,15 @@
 package controllers
 
+import java.util.concurrent.TimeUnit
 import javax.inject._
 
 import models.MessagesRepo
 import models.Models.{PageStatus, _}
+import play.api.cache.SyncCacheApi
 import play.api.libs.json.Json
 import play.api.mvc._
+
+import scala.concurrent.duration.Duration
 
 
 /**
@@ -13,7 +17,7 @@ import play.api.mvc._
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cache: SyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) {
 
   /**
     * Create an Action to render an HTML page.
@@ -28,11 +32,17 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
 
   def home() = Action {
-    Ok(Json.toJson(PageView(PageStatus.Ok,
-      Envelope(
-        (Stream.from(0).map(_.toString) zip MessagesRepo.all).toMap
-      )
-    )))
+    Ok(Json.toJson(getPage))
   }
 
+  private def getPage = {
+    cache.getOrElseUpdate("myPage", Duration(30, TimeUnit.SECONDS)) {
+      PageView(PageStatus.Ok,
+        Envelope(
+          (Stream.from(0).map(_.toString) zip MessagesRepo.all).toMap
+        )
+      )
+    }
+
+  }
 }

@@ -8,6 +8,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.12.3"
 
 libraryDependencies += guice
+libraryDependencies += ehcache
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 libraryDependencies += "org.json4s" %% "json4s-native" % "3.5.3"
 
