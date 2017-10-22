@@ -72,10 +72,15 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
         stream.close()
       }
 
-    def getListOfFiles(dir: String): List[Path] =
-      using(Files.walk(Paths.get(dir))) {
-        _.iterator().asScala.filter(Files.isRegularFile(_)).toList
+    import resource._
+
+    def getListOfFiles(dir: String): List[Path] = {
+      val res = managed(Files.walk(Paths.get(dir))) map { stream =>
+        stream.iterator().asScala.filter(Files.isRegularFile(_)).toList
       }
+      res.opt.getOrElse(List())
+    }
+
 
 
     def scanDirectories(dirs: List[String]): List[Path] = dirs flatMap scanDirectory
