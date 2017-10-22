@@ -1,6 +1,6 @@
 package controllers
 
-import java.io.PrintWriter
+import java.io.{Closeable, PrintWriter}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, Paths}
 
@@ -57,7 +57,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       //      s"$home/.npm"
       //      ,s"$home/.m2"
       //    )).size
-      val javaFiles = Files.readAllLines(Paths.get("files.list"))//getListOfFiles(s"$home/.npm")
+      val javaFiles = getListOfFiles(s"$home/.npm") // Files.readAllLines(Paths.get("files.list"))
       println(s"java files amount: ${javaFiles.size}")
       val total = System.currentTimeMillis() - start
       println(s"spent $total")
@@ -65,8 +65,17 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
 
     import scala.collection.JavaConverters._
 
+    def using[R <: AutoCloseable, T](stream: R)(f: R => T): T =
+      try {
+        f(stream)
+      } finally {
+        stream.close()
+      }
+
     def getListOfFiles(dir: String): List[Path] =
-      Files.walk(Paths.get(dir)).iterator().asScala.filter(Files.isRegularFile(_)).toList
+      using(Files.walk(Paths.get(dir))) {
+        _.iterator().asScala.filter(Files.isRegularFile(_)).toList
+      }
 
 
     def scanDirectories(dirs: List[String]): List[Path] = dirs flatMap scanDirectory
