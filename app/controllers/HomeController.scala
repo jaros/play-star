@@ -3,12 +3,15 @@ package controllers
 import java.util.concurrent.TimeUnit
 import javax.inject._
 
+import akka.actor.ActorSystem
 import models.MessagesRepo
 import models.Models.{PageStatus, _}
 import play.api.cache.SyncCacheApi
+import play.api.libs.concurrent.CustomExecutionContext
 import play.api.libs.json.Json
 import play.api.mvc._
 
+import scala.concurrent.duration._
 import scala.concurrent.duration.Duration
 
 
@@ -17,7 +20,7 @@ import scala.concurrent.duration.Duration
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(cache: SyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cache: SyncCacheApi, cc: ControllerComponents, actorSystem: ActorSystem, executor: TasksCustomExecutionContext) extends AbstractController(cc) {
 
   /**
     * Create an Action to render an HTML page.
@@ -29,6 +32,11 @@ class HomeController @Inject()(cache: SyncCacheApi, cc: ControllerComponents) ex
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
   }
+
+  actorSystem.scheduler.schedule(initialDelay = 10.seconds, interval = 30.seconds) {
+    // the block of code that will be executed
+    print("Executing something...")
+  } (executor)
 
 
   def home() = Action {
@@ -46,3 +54,6 @@ class HomeController @Inject()(cache: SyncCacheApi, cc: ControllerComponents) ex
 
   }
 }
+
+class TasksCustomExecutionContext @Inject() (actorSystem: ActorSystem)
+  extends CustomExecutionContext(actorSystem, "tasks-dispatcher")

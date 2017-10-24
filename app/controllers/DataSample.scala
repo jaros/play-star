@@ -6,22 +6,24 @@ import org.json4s._
 import org.json4s.native.JsonMethods._
 
 import scala.collection.mutable
-import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Deadline, Duration}
+import scala.concurrent.{Await, Future, Promise}
 import scala.util.Try
 import scala.xml.Elem
 
 object DataSample {
 
 
-  val cache: mutable.Map[String, Elem] = mutable.Map.empty
+  val cache: mutable.Map[String, Elem] = mutable.WeakHashMap.empty
 
 
   def main(args: Array[String]): Unit = {
     loadCachedXml
     loadCachedXml
     loadCachedXml
+
+    (0 /: List("blah", "op")) ((c, _) => c + 1)
 
     delay(Duration(7, TimeUnit.SECONDS).fromNow)
 
