@@ -1,0 +1,11 @@
+@(ratesView: controllers.RatesView)
+
+@main("Currencies rates") {
+  <div id="status">@ratesView.base</div>
+  <div id="date">@ratesView.date</div>
+  <ul>
+  @for((currency, rate) <- ratesView.rates) {
+  <li>@currency -> @rate</li>
+  }
+  </ul>
+}

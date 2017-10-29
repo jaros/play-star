@@ -4,8 +4,9 @@ import javax.inject._
 
 import models.MessagesRepo
 import models.Models.{PageStatus, _}
-import play.api.libs.json.Json
+import play.api.libs.json._
 import play.api.mvc._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -24,7 +25,7 @@ class HomeController @Inject()(cc: ControllerComponents, currencyService: Curren
     * a path of `/`.
     */
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+    Ok(views.html.index(getPage))
   }
 
 
@@ -38,11 +39,23 @@ class HomeController @Inject()(cc: ControllerComponents, currencyService: Curren
     }
   }
 
-  private def getPage = {
+  def showCurrencies = Action.async {
+    currencyService.latest.get() map { resp =>
+      Ok(views.html.currences(resp.json.as[RatesView]))
+    }
+  }
+
+  def getPage = {
     PageView(PageStatus.Ok,
       Envelope(
         (Stream.from(0).map(_.toString) zip MessagesRepo.all).toMap
       )
     )
   }
+}
+
+case class RatesView(base: String, date: String, rates: Map[String, Double])
+
+object RatesView {
+  implicit val ratesViewFormat: Reads[RatesView] = Json.reads[RatesView]
 }
