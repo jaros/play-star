@@ -5,7 +5,7 @@
   <div id="date">@ratesView.date</div>
   <ul>
   @for((currency, rate) <- ratesView.rates) {
-  <li>@currency -> @rate</li>
+    <li><a href='@routes.HomeController.showCurrencies(Some(currency))'>@currency</a> -> @rate</li>
   }
   </ul>
 }

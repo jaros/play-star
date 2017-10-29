@@ -39,8 +39,9 @@ class HomeController @Inject()(cc: ControllerComponents, currencyService: Curren
     }
   }
 
-  def showCurrencies = Action.async {
-    currencyService.latest.get() map { resp =>
+  def showCurrencies(base: Option[String]) = Action.async {
+    val params = base.map(curr => Seq("base" -> curr)).getOrElse(Seq.empty)
+    currencyService.latest.withQueryStringParameters(params: _*).get() map { resp =>
       Ok(views.html.currences(resp.json.as[RatesView]))
     }
   }
