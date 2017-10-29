@@ -6,6 +6,7 @@ import models.MessagesRepo
 import models.Models.{PageStatus, _}
 import play.api.libs.json.Json
 import play.api.mvc._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
@@ -13,7 +14,7 @@ import play.api.mvc._
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(cc: ControllerComponents, currencyService: CurrencyService) extends AbstractController(cc) {
 
   /**
     * Create an Action to render an HTML page.
@@ -29,6 +30,12 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def home() = Action {
     Ok(Json.toJson(getPage))
+  }
+
+  def currencies() = Action.async {
+    currencyService.latest.get() map { resp =>
+      Ok(resp.json)
+    }
   }
 
   private def getPage = {
